@@ -1,0 +1,1 @@
+在ginger-frontend命令行运行npm run dev启动前端，打开数据库后，在java启动类开启后端，此外使用ai模型的检测需要启动start-ai.bat

@@ -1,0 +1,296 @@
+<template>
+  <div class="login-container">
+    <div class="login-box">
+      <h1 class="title">🌾 彝小姜管理系统</h1>
+      <p class="subtitle">罗平小黄姜价格监测与溯源平台</p>
+
+      <el-form :model="loginForm" :rules="rules" ref="loginFormRef" class="login-form">
+        <el-form-item prop="username">
+          <el-input
+            v-model="loginForm.username"
+            placeholder="请输入用户名"
+            prefix-icon="User"
+            size="large"
+          />
+        </el-form-item>
+
+        <el-form-item prop="password">
+          <el-input
+            v-model="loginForm.password"
+            type="password"
+            placeholder="请输入密码"
+            prefix-icon="Lock"
+            size="large"
+            show-password
+            @keyup.enter="handleLogin"
+          />
+        </el-form-item>
+
+        <el-form-item>
+          <el-button
+            type="primary"
+            :loading="loading"
+            @click="handleLogin"
+            size="large"
+            style="width: 100%"
+          >
+            登 录
+          </el-button>
+        </el-form-item>
+
+        <div class="role-select">
+          <el-radio-group v-model="loginForm.role" size="large" @change="onRoleChange">
+            <el-radio-button label="farmer">👨‍🌾 农户</el-radio-button>
+            <el-radio-button label="merchant">🏪 商户</el-radio-button>
+            <el-radio-button label="admin">👨‍💼 管理员</el-radio-button>
+          </el-radio-group>
+        </div>
+
+        <!-- 账号信息卡片 -->
+        <div class="account-card">
+          <h4>📋 当前角色账号信息</h4>
+          <div class="account-info">
+            <div class="info-row">
+              <span class="label">用户名：</span>
+              <span class="value">{{ currentAccount.username }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">密码：</span>
+              <span class="value">{{ currentAccount.password }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">姓名：</span>
+              <span class="value">{{ currentAccount.realName }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">电话：</span>
+              <span class="value">{{ currentAccount.phone }}</span>
+            </div>
+          </div>
+        </div>
+      </el-form>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, reactive, computed, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { ElMessage } from 'element-plus'
+
+const router = useRouter()
+const loginFormRef = ref(null)
+const loading = ref(false)
+
+const loginForm = reactive({
+  username: 'farmer',
+  password: '123456',
+  role: 'farmer'
+})
+
+const rules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' }
+  ]
+}
+
+// 账号信息配置
+const accounts = {
+  farmer: {
+    username: 'farmer',
+    password: '123456',
+    realName: '张三农户',
+    phone: '13800138001'
+  },
+  merchant: {
+    username: 'merchant',
+    password: '123456',
+    realName: '李四商户',
+    phone: '13800138002'
+  },
+  admin: {
+    username: 'admin',
+    password: '123456',
+    realName: '系统管理员',
+    phone: '13800138003'
+  }
+}
+
+// 当前账号信息
+const currentAccount = computed(() => {
+  return accounts[loginForm.role] || accounts.farmer
+})
+
+// 监听角色变化，自动更新用户名和密码
+watch(() => loginForm.role, (newRole) => {
+  const account = accounts[newRole]
+  if (account) {
+    loginForm.username = account.username
+    loginForm.password = account.password
+  }
+})
+
+const onRoleChange = () => {
+  // 角色变化时自动填充账号信息
+}
+
+const handleLogin = async () => {
+  if (!loginFormRef.value) return
+
+  await loginFormRef.value.validate(async (valid) => {
+    if (valid) {
+      loading.value = true
+
+      try {
+        // 调用后端登录接口
+        const response = await fetch('http://localhost:8088/api/v1/user/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: loginForm.username,
+            password: loginForm.password
+          })
+        })
+
+        const result = await response.json()
+
+        if (result.code === 200 && result.data) {
+          // 保存用户信息
+          localStorage.setItem('user', JSON.stringify(result.data))
+          ElMessage.success('登录成功！')
+          
+          // 根据用户角色跳转到对应页面
+          const role = result.data.role
+          if (role === 'farmer') {
+            router.push('/farmer')
+          } else if (role === 'merchant') {
+            router.push('/merchant')
+          } else if (role === 'admin') {
+            router.push('/admin')
+          }
+        } else {
+          ElMessage.error(result.message || '用户名或密码错误')
+        }
+      } catch (error) {
+        // 如果后端未启动，使用模拟登录
+        console.log('后端未启动，使用模拟登录')
+        
+        // 模拟登录验证
+        const mockUsers = {
+          farmer: { id: 1, username: 'farmer', password: '123456', role: 'farmer', realName: '张三农户', phone: '13800138001' },
+          merchant: { id: 2, username: 'merchant', password: '123456', role: 'merchant', realName: '李四商户', phone: '13800138002' },
+          admin: { id: 3, username: 'admin', password: '123456', role: 'admin', realName: '系统管理员', phone: '13800138003' }
+        }
+
+        const user = mockUsers[loginForm.role]
+        if (user && loginForm.password === '123456') {
+          localStorage.setItem('user', JSON.stringify(user))
+          ElMessage.success('登录成功！（模拟模式）')
+          router.push('/' + loginForm.role)
+        } else {
+          ElMessage.error('用户名或密码错误')
+        }
+      }
+      
+      loading.value = false
+    }
+  })
+}
+</script>
+
+<style scoped>
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-box {
+  background: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 420px;
+}
+
+.title {
+  text-align: center;
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 28px;
+}
+
+.subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 30px;
+  font-size: 14px;
+}
+
+.login-form {
+  margin-top: 30px;
+}
+
+.role-select {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.role-select .el-radio-group {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.role-select :deep(.el-radio-button) {
+  flex: 1;
+}
+
+.role-select :deep(.el-radio-button__inner) {
+  width: 100%;
+}
+
+.account-card {
+  margin-top: 25px;
+  padding: 20px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%);
+  border-radius: 8px;
+}
+
+.account-card h4 {
+  margin: 0 0 15px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.account-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+}
+
+.info-row .label {
+  width: 70px;
+  color: #666;
+  font-size: 14px;
+}
+
+.info-row .value {
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+}
+</style>

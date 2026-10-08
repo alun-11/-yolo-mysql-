@@ -1,0 +1,248 @@
+/**
+ * 壹小姜·数智助农 - 全局视觉 VI 品牌色变量
+ */
+
+:root {
+  /* 品牌主色 */
+  --yxj-totem-red: #C41E3A;       /* 壹族图腾红 */
+  --yxj-gold: #DAA520;             /* 高原红壤金 */
+  --yxj-green: #228B22;            /* 科技助农绿（主色调） */
+  --yxj-green-light: #2d5a27;      /* 助农绿 - 深色变体 */
+  --yxj-green-dark: #1a3a1a;       /* 助农绿 - 最深 */
+
+  /* 衍生色 */
+  --yxj-primary: var(--yxj-green);
+  --yxj-accent: var(--yxj-gold);
+  --yxj-warning: var(--yxj-totem-red);
+
+  /* Element Plus 主色覆盖（绿色） */
+  --el-color-primary: #228B22;
+  --el-color-primary-light-3: #4a9c4a;
+  --el-color-primary-light-5: #6fae6f;
+  --el-color-primary-light-7: #95c595;
+  --el-color-primary-light-8: #b3d8b3;
+  --el-color-primary-light-9: #d2e8d2;
+  --el-color-primary-dark-2: #1a6b1a;
+}
+
+/* 全局按钮点缀：危险/警告按钮融入图腾红 */
+:root {
+  --el-color-danger: #C41E3A;
+  --el-color-danger-light-3: #d44b62;
+  --el-color-danger-light-5: #dc7085;
+  --el-color-danger-light-7: #e5a0af;
+  --el-color-danger-light-9: #f5dde2;
+}
+
+/* 全局警告按钮融入金色 */
+:root {
+  --el-color-warning: #DAA520;
+  --el-color-warning-light-3: #e1b54d;
+  --el-color-warning-light-5: #e7c670;
+  --el-color-warning-light-7: #eed7a0;
+  --el-color-warning-light-9: #f7eed0;
+}
+
+/* 大屏模式下隐藏全局 Footer，保持纯净 */
+body.bigscreen-active .app-footer {
+  display: none;
+}
+
+/* ========== 全局响应式基础 ========== */
+:root {
+  --mobile-breakpoint: 768px;
+  --tablet-breakpoint: 1024px;
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+html {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+  .app-main {
+    padding-bottom: var(--safe-bottom);
+  }
+}
+
+/* 移动端 el-aside 隐藏 */
+@media (max-width: 768px) {
+  .merchant-container .sidebar,
+  .farmer-container .sidebar,
+  .admin-container .sidebar {
+    display: none !important;
+  }
+  .merchant-container .main-content,
+  .farmer-container .main-content,
+  .admin-container .main-content {
+    padding: 12px !important;
+  }
+}
+
+/* 移动端 header 自适应 */
+@media (max-width: 768px) {
+  .merchant-container .header,
+  .farmer-container .header,
+  .admin-container .header {
+    flex-wrap: wrap;
+    padding: 10px 12px !important;
+    height: auto !important;
+    min-height: 56px;
+  }
+  .merchant-container .header-left,
+  .farmer-container .header-left,
+  .admin-container .header-left {
+    flex: 1;
+    min-width: 0;
+    gap: 8px;
+  }
+  .merchant-container .header-left h2,
+  .farmer-container .header-left h2,
+  .admin-container .header-left h2 {
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 50vw;
+  }
+  .merchant-container .header-right,
+  .farmer-container .header-right,
+  .admin-container .header-right {
+    flex-shrink: 0;
+  }
+  .merchant-container .user-info,
+  .farmer-container .user-info,
+  .admin-container .user-info {
+    display: none;
+  }
+}
+
+/* 移动端 el-table 隐藏，卡片显示 */
+.mobile-only {
+  display: none;
+}
+.desktop-only {
+  display: block;
+}
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+  .desktop-only {
+    display: none;
+  }
+}
+
+/* 移动端底部 tab 栏 */
+.mobile-tab-bar {
+  display: none;
+}
+@media (max-width: 768px) {
+  .mobile-tab-bar {
+    display: flex;
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #eee;
+    padding: 6px 0 calc(6px + var(--safe-bottom));
+    gap: 0;
+    z-index: 10;
+  }
+  .mobile-tab-bar .tab-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 11px;
+    color: #909399;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .mobile-tab-bar .tab-item.active {
+    color: var(--yxj-green, #228B22);
+  }
+  .mobile-tab-bar .tab-icon {
+    font-size: 20px;
+    margin-bottom: 2px;
+  }
+}
+
+/* 移动端商品卡片列表 */
+.mobile-card-list {
+  display: none;
+}
+@media (max-width: 768px) {
+  .mobile-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .mobile-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    border: 1px solid #f0f0f0;
+  }
+  .mobile-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .mobile-card-title {
+    font-weight: 600;
+    font-size: 15px;
+    color: #333;
+  }
+  .mobile-card-tag {
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .mobile-card-body {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.8;
+  }
+  .mobile-card-row {
+    display: flex;
+    justify-content: space-between;
+  }
+  .mobile-card-footer {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #f5f5f5;
+  }
+  .mobile-card-footer .el-button {
+    flex: 1;
+  }
+}
+
+/* 移动端 el-dialog 全宽 */
+@media (max-width: 768px) {
+  .el-dialog {
+    width: 94% !important;
+    margin: 5vh auto !important;
+  }
+}
+
+/* 移动端 el-descriptions 纵向 */
+@media (max-width: 768px) {
+  .el-descriptions {
+    font-size: 13px;
+  }
+}
+
+/* 移动端价格行情页面图表适配 */
+@media (max-width: 768px) {
+  .price-chart-container {
+    height: 280px !important;
+  }
+}
